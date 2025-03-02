@@ -1,5 +1,5 @@
 //------------------------------------------------------------
-// Программа решения уравнений Пуассона методом Гаусса-Зейделя
+//      -
 //------------------------------------------------------------
 #include <iostream>
 #include <iomanip>
@@ -10,17 +10,17 @@
 
 using namespace std;
 
-// Функции решения уравнения (результаты всех версий должны быть идентичны!)
-int Calc_ser(double** u, double** f, int N, double eps);  // последовательная
-int Calc_blk(double** u, double** f, int N, double eps);  // блочная последовательная
-int Calc_par(double** u, double** f, int N, double eps);  // параллельная (блочная)
+//    (     !)
+int Calc_ser(double** u, double** f, int N, double eps);  // 
+int Calc_blk(double** u, double** f, int N, double eps);  //  
+int Calc_par(double** u, double** f, int N, double eps);  //  ()
 
-// Инициализация массивов
+//  
 void Init(double **u, double **f, int N);
 double** new_arr(int N);
 void delete_arr(double** arr, int N);
 
-// Вывод части массива для контроля
+//     
 void Output(double** u, int N);
 
 
@@ -28,61 +28,61 @@ int main(int argc, char **argv)
 {
 	double **u=NULL, **f=NULL;
 	
-	const int N = 600;        // Количество точек сетки по каждой размерности
-	const double eps = 0.0001;   // Точность вычислений
-	int icnt;                  // Количество итераций
-	double stime = -1;         // Время решения
+	const int N = 1000;        //      
+	const double eps = 0.00001;   //  
+	int icnt;                  //  
+	double stime = -1;         //  
 	
-	f = new_arr(N);      // Выделение памяти под правую часть значений уравнения
-	u = new_arr(N + 2);  // Выделение памяти под неизвестные и краевые условия
+	f = new_arr(N);      //       
+	u = new_arr(N + 2);  //       
 
-	//	 Последовательная реализация
+	 //	  
 
 		cout << "\n\t*** Serial version ***\n";
-		Init(u, f, N);                  // Инициализация краевых условий и правой части уравнения
+		Init(u, f, N);                  //       
     stime = omp_get_wtime();
-		icnt = Calc_ser(u, f, N, eps);  // Вызов функции расчета по методу Гаусса-Зейделя
+		icnt = Calc_ser(u, f, N, eps);  //      -
 		cout << "Solution time = " << omp_get_wtime() -stime << endl;
     cout << "Iterations =    " << icnt << endl;
 		cout << "Results:\n";
-		Output(u, N);                   // Вывод результатов на экран
+		Output(u, N);                   //    
 
-	//	 Последовательная блочная реализация
+	//	   
 
 		cout << "\n\t*** Block serial version ***\n";
-		Init(u, f, N);                  // Инициализация краевых условий и правой части
+		Init(u, f, N);                  //      
 		stime = omp_get_wtime();
-		icnt = Calc_blk(u, f, N, eps);  // Вызов блочной функции расчета
+		icnt = Calc_blk(u, f, N, eps);  //    
 		cout << "Solution time = " << omp_get_wtime() -stime << endl;
     cout << "Iterations =    " << icnt << endl;
 		cout << "Results:\n";
 		Output(u, N);
 
-	//   Параллельная реализация (блочная)
+	//     ()
 	
 		cout << "\n\t*** Parallel version ***\n";
-		Init(u, f, N);                  // Инициализация краевых условий и правой части
+		Init(u, f, N);                  //      
 		stime = omp_get_wtime();
-		icnt = Calc_par(u, f, N, eps);  // Вызов параллельной функции расчета
+		icnt = Calc_par(u, f, N, eps);  //    
 		cout << "Solution time = " << omp_get_wtime() -stime << endl;
     cout << "Iterations =    " << icnt << endl;
 		cout << "Results:\n";
 		Output(u, N);
 
-  // Освобождение памяти массивов
+  //   
   delete_arr(f, N);
   delete_arr(u, N + 2);
   
 	return 0;
 }
 
-// Последовательная функция, реализующая алгоритм Гаусса-Зейделя
-// Входные параметры: массив неизвестных и краевых значений, массив правых частей, количество точек сетки по каждому направлению, точность вычислений
+//  ,   -
+//  :     ,   ,      ,  
 int Calc_ser(double** u, double** f, int N, double eps)
 {
-	double max;                // Максимальная ошибка на итерации
-	double h = 1.0 / (N + 1);  // Величина шага
-	int icnt = 0;              // Количество итераций
+	double max;                //    
+	double h = 1.0 / (N + 1);  //  
+	int icnt = 0;              //  
 
 	do
 	{
@@ -92,10 +92,10 @@ int Calc_ser(double** u, double** f, int N, double eps)
 			for (int j = 1; j <= N; j++)
 			{
 				double u0 = u[i][j];
-				u[i][j] = 0.25 * (u[i - 1][j] + u[i + 1][j]     // Расчет по формуле Гаусса-Зейделя
+				u[i][j] = 0.25 * (u[i - 1][j] + u[i + 1][j]     //    -
 					         + u[i][j - 1] + u[i][j + 1] - h * h * f[i - 1][j - 1]);
-				double d = fabs(u[i][j] - u0);      // Разность нового значения неизвестной и значения с предыдущей итерации
-				if (d > max)                       // Поиск максимальной ошибки
+				double d = fabs(u[i][j] - u0);      //         
+				if (d > max)                       //   
 					max = d;
 			}
 	}
@@ -104,13 +104,13 @@ int Calc_ser(double** u, double** f, int N, double eps)
 	return icnt;
 }
 
-// Последовательная функция, реализующая блочный алгоритм Гаусса-Зейделя
+//  ,    -
 int Calc_blk(double** u, double** f, int N, double eps)
 {
 	double max;
 	double h = 1.0 / (N + 1);
 	int icnt = 0;
-	const int BlockSize = 50;  // Оптимальный размер блока
+	const int BlockSize = 50;  //   
 	int bcnt = N / BlockSize;
 
 	if (N % BlockSize != 0) {
@@ -150,12 +150,12 @@ int Calc_blk(double** u, double** f, int N, double eps)
 	return icnt;
 }
 
-// Параллельная реализия блочного алгоритма Гаусса-Зейделя
+//     -
 int Calc_par(double** u, double** f, int N, double eps) {
-	double max;
+	double max_global;
 	double h = 1.0 / (N + 1);
 	int icnt = 0;
-	const int BlockSize = 50;  // Оптимальный размер блока
+	const int BlockSize = 50;  
 	int bcnt = N / BlockSize;
 
 	if (N % BlockSize != 0) {
@@ -164,23 +164,22 @@ int Calc_par(double** u, double** f, int N, double eps) {
 	}
 
 	do {
-			icnt++;
-			max = 0;
-
-			#pragma omp parallel
-			{
-					for (int wave = 0; wave < 2 * bcnt - 1; wave++) {
-							#pragma omp for reduction(max:max)
+					icnt++;
+					max_global = 0;
+					// Обработка волн
+					for (int wave = 0; wave < bcnt; wave++) {
+							#pragma omp parallel for reduction(max:max_global)
+							// Распараллеливание обработки диагоналей внутри волны
 							for (int diag = 0; diag <= wave; diag++) {
 									int i_block = diag;
 									int j_block = wave - diag;
-									if (i_block >= bcnt || j_block >= bcnt) continue;
-
+									
+									// Границы текущего блока	
 									int i_start = i_block * BlockSize + 1;
 									int i_end = (i_block + 1) * BlockSize;
 									int j_start = j_block * BlockSize + 1;
 									int j_end = (j_block + 1) * BlockSize;
-
+									double max_local;
 									for (int i = i_start; i <= i_end; i++) {
 											for (int j = j_start; j <= j_end; j++) {
 													double u_old = u[i][j];
@@ -188,21 +187,51 @@ int Calc_par(double** u, double** f, int N, double eps) {
 																					+ u[i][j-1] + u[i][j+1] 
 																					- h * h * f[i-1][j-1]);
 													double diff = fabs(u[i][j] - u_old);
-													if (diff > max) max = diff;
+													if (diff > max_local) max_local = diff;
 											}
 									}
+									if(max_local  > max_global) max_global = max_local;
 							}
-					}
+							#pragma omp barrier
+					
 			}
-	} while (max > eps);
+
+			for (int wave = 1; wave <2* bcnt-1; wave++) {
+				#pragma omp parallel for reduction(max:max_global)
+				// Распараллеливание обработки диагоналей внутри волны
+				for (int diag = 0; diag <= bcnt - wave; diag++) {
+						int i_block = diag;
+						int j_block = wave - diag;
+						// Границы текущего блока	
+						int i_start = i_block * BlockSize + 1;
+						int i_end = (i_block + 1) * BlockSize;
+						int j_start = j_block * BlockSize + 1;
+						int j_end = (j_block + 1) * BlockSize;
+
+						double max_local;
+						for (int i = i_start; i <= i_end; i++) {
+								for (int j = j_start; j <= j_end; j++) {
+										double u_old = u[i][j];
+										u[i][j] = 0.25 * (u[i-1][j] + u[i+1][j] 
+																		+ u[i][j-1] + u[i][j+1] 
+																		- h * h * f[i-1][j-1]);
+										double diff = fabs(u[i][j] - u_old);
+										if (diff > max_local) max_local = diff;
+								}
+						}
+						if(max_local  > max_global) max_global = max_local;
+				}
+				#pragma omp barrier
+		
+}
+
+
+	} while (max_global > eps);
 
 	return icnt;
 }
 
-
-
-
-// Функция выделения памяти под 2D массив
+//     2D 
 double** new_arr(int N)
 {
 	double** f = new double* [N];
@@ -213,7 +242,7 @@ double** new_arr(int N)
 	return f;
 }
 
-// Функция освобождения памяти 2D массива
+//    2D 
 void delete_arr(double** arr, int N)
 {
 	for (int i = 0; i < N; i++)
@@ -223,7 +252,7 @@ void delete_arr(double** arr, int N)
 	delete[] arr;
 }
 
-// Задание граничных значений
+//   
 double G(double x, double y)
 {
 	if (x == 0) return 1 - 2 * y;
@@ -232,13 +261,13 @@ double G(double x, double y)
 	if (y == 1) return -1 + 2 * x;
 }
 
-// Задание правой части
+//   
 double F(double x, double y)
 {
 	return 2.2;
 }
 
-// Инициализация массивов правой части и краевых условий
+//       
 void Init(double **u, double **f, int N)
 {
 	double h = 1.0 / (N + 1);
@@ -261,7 +290,7 @@ void Init(double **u, double **f, int N)
 	}
 }
 
-// Функция вывода прореженной матрицы решения
+//     
 void Output(double** u, int N)
 {
   const int K = 5;
